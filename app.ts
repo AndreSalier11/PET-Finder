@@ -1,4 +1,5 @@
 import express from "express";
+require('dotenv').config();
 const db_routes = require("./services/database/routes/routes");
 
 let db_app = express();
