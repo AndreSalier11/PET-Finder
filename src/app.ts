@@ -1,11 +1,14 @@
-import express from "express";
+import express, {Application} from "express";
 require('dotenv').config();
-const db_routes = require("./services/database/routes/routes");
 
-let db_app = express();
-db_app.use("/", db_routes);
-const db_conn = require("./services/database/connection.json");
+const db_routes = require("./database/routes/routes");
+const PORT = process.env.PORT;
+const HOST = process.env.HOST;
 
-db_app.listen(db_conn.port, function () {
-  console.log("Serviço - Base de Dados ligada - porta " + db_conn.port);
+let db_app: Application = express();
+db_app.use("", db_routes);
+
+
+db_app.listen(PORT, function () {
+  console.log("🐶 Base de Dados ligada! - A ouvir http://" + HOST + ":" + PORT);
 });

@@ -1,20 +1,25 @@
 import mysql from "mysql";
-import express from "express";
+import express, { Router } from "express";
+import config from "../../typings/config";
 
-const db_conn: any = {
-  "host": process.env.host,
-  "port": process.env.port,
-  "user": process.env.root,
-  "password": process.env.password,
-  "database": process.env.database
+const db_conn = {
+  host: config.HOST,
+  port: config.PORT,
+  database: config.DATABASE,
+  user: config.USER,
+  password: config.PASSWORD
 };
-const router = express.Router();
+
+const router: Router = express.Router();
+
+router.get("/", function(req, res) {
+  res.status(200).send("Olá");
+});
 
 let conn = mysql.createConnection(db_conn);
 conn.connect(function (err: any) {
   if (err) return console.log("\nerror: " + err.message);
 
-  
 
   conn.end;
 });
