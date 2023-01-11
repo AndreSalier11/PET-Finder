@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 console.log(path.resolve(__dirname, "../../.env"));
 
+// https://dev.to/asjadanis/parsing-env-with-typescript-3jjm
+
 
 interface ENV {
   HOST: string | undefined,

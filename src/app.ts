@@ -10,5 +10,5 @@ db_app.use("", db_routes);
 
 
 db_app.listen(PORT, function () {
-  console.log("🐶 Base de Dados ligada! - A ouvir http://" + HOST + ":" + PORT);
+  console.log("🐶 Base de Dados online! - A ouvir http://" + HOST + ":" + PORT);
 });
