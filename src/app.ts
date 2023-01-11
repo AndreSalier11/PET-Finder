@@ -1,14 +1,34 @@
 import express, {Application} from "express";
-require('dotenv').config();
+import config from "./typings/config";
 
-const db_routes = require("./database/routes/routes");
-const PORT = process.env.PORT;
-const HOST = process.env.HOST;
+const PORT = config.PORT;
+const HOST = config.HOST;
 
-let db_app: Application = express();
-db_app.use("", db_routes);
+let app: Application = express();
+
+// =============== ROUTES ===============
+const animal = require("./routes/animal");
+const contacto = require("./routes/contacto");
+const especie = require("./routes/especie");
+const estado = require("./routes/estado");
+const fatura = require("./routes/fatura");
+const favorito = require("./routes/favorito");
+const local = require("./routes/local");
+const role = require("./routes/role");
+const user = require("./routes/user");
+
+app.use("/animal", animal);
+app.use("/contacto", contacto);
+app.use("/especie", especie);
+app.use("/estado", estado);
+app.use("/fatura", fatura);
+app.use("/favorito", favorito);
+app.use("/local", local);
+app.use("/role", role);
+app.use("/user", user);
+// ======================================
 
 
-db_app.listen(PORT, function () {
-  console.log("🐶 Base de Dados online! - A ouvir http://" + HOST + ":" + PORT);
+app.listen(PORT, function () {
+  console.log("🐶 API DB online - A ouvir http://" + HOST + ":" + PORT);
 });

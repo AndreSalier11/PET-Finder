@@ -2,10 +2,6 @@ import path from "path";
 import dotenv from "dotenv";
 
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
-console.log(path.resolve(__dirname, "../../.env"));
-
-// https://dev.to/asjadanis/parsing-env-with-typescript-3jjm
-
 
 interface ENV {
   HOST: string | undefined,
@@ -38,7 +34,7 @@ const getConfig = (): ENV => {
 const getSanitzedConfig = (config: ENV): Config => {
   for (const [key, value] of Object.entries(config)) {
     if (value === undefined) {
-      throw new Error(`Missing key ${key} in config.env`);
+      throw new Error(`Missing key ${key} in .env`);
     }
   }
   return config as Config;
