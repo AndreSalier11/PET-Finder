@@ -1,5 +1,5 @@
-import express, {Application} from "express";
-import config from "./typings/config";
+import express, { Application } from "express";
+import config from "./config";
 
 const PORT = config.PORT;
 const HOST = config.HOST;
@@ -27,7 +27,6 @@ app.use("/local", local);
 app.use("/role", role);
 app.use("/user", user);
 // ======================================
-
 
 app.listen(PORT, function () {
   console.log("🐶 API DB online - A ouvir http://" + HOST + ":" + PORT);
