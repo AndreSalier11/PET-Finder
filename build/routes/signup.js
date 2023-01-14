@@ -56,7 +56,7 @@ router.post("/", function (req, res) {
                     });
                 }
                 if (yield bcrypt_1.default.compare(password, result[0].password)) {
-                    let token = yield jwt.sign({ email: email }, config_1.default.SECRETKEY, (err, token) => {
+                    yield jwt.sign({ email: email }, config_1.default.SECRETKEY, { expiresIn: "3d" }, (err, token) => {
                         res.status(200).send({
                             status: 1,
                             message: "Login Feito",

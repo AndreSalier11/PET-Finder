@@ -50,9 +50,10 @@ router.post("/", async function (req, res) {
       }
 
       if (await bcrypt.compare(password, result[0].password)) {
-        let token = await jwt.sign(
+        await jwt.sign(
           { email: email },
           config.SECRETKEY,
+          { expiresIn: "3d" },
           (err: string, token: string) => {
             res.status(200).send({
               status: 1,
