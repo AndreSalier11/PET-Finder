@@ -5,6 +5,7 @@ const PORT = config.PORT;
 const HOST = config.HOST;
 
 let app: Application = express();
+app.use(express.urlencoded({extended:true}))
 
 // =============== ROUTES ===============
 const animal = require("./routes/animal");
@@ -17,17 +18,29 @@ const local = require("./routes/local");
 const role = require("./routes/role");
 const user = require("./routes/user");
 
-app.use("/animal", animal);
-app.use("/contacto", contacto);
-app.use("/especie", especie);
-app.use("/estado", estado);
-app.use("/fatura", fatura);
-app.use("/favorito", favorito);
-app.use("/local", local);
-app.use("/role", role);
-app.use("/user", user);
+const login = require("./routes/login");
+
+// app.use("/animal", animal);
+// app.use("/contacto", contacto);
+// app.use("/especie", especie);
+// app.use("/estado", estado);
+// app.use("/fatura", fatura);
+// app.use("/favorito", favorito);
+// app.use("/local", local);
+// app.use("/role", role);
+// app.use("/user", user);
+
+// app.use("/login", login);
 // ======================================
+import { Connection } from "mysql";
+const db: Connection = require("./db_conn");
+
+db.connect(function (err: any) {
+  if (err) return console.log("\n🚩 error: " + err.message);
+  console.log("🐶 Ligado à DB");
+});
+
 
 app.listen(PORT, function () {
-  console.log("🐶 API DB online - A ouvir http://" + HOST + ":" + PORT);
+  console.log("🐶 PetFinder API online - A ouvir http://" + HOST + ":" + PORT);
 });

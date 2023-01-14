@@ -1,7 +1,7 @@
 import path from "path";
 import dotenv from "dotenv";
 
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+dotenv.config({ path: path.resolve(__dirname, "../.env") })
 
 interface ENV {
   HOST: string | undefined,
@@ -9,6 +9,7 @@ interface ENV {
   DATABASE: string | undefined,
   USER: string | undefined,
   PASSWORD: string | undefined
+  SECRETKEY: string | undefined
 }
 
 interface Config {
@@ -16,7 +17,8 @@ interface Config {
   PORT: number,
   DATABASE: string,
   USER: string,
-  PASSWORD: string
+  PASSWORD: string,
+  SECRETKEY: string
 }
 
 
@@ -26,7 +28,8 @@ const getConfig = (): ENV => {
     PORT: process.env.PORT ? Number(process.env.PORT) : undefined,
     DATABASE: process.env.DATABASE,
     USER: process.env.USER,
-    PASSWORD: process.env.PASSWORD
+    PASSWORD: process.env.PASSWORD,
+    SECRETKEY: process.env.SECRETKEY
   };
 };
 
