@@ -8,15 +8,15 @@ let app: Application = express();
 app.use(express.urlencoded({extended:true}))
 
 // =============== ROUTES ===============
-const animal = require("./routes/animal");
-const contacto = require("./routes/contacto");
-const especie = require("./routes/especie");
-const estado = require("./routes/estado");
-const fatura = require("./routes/fatura");
-const favorito = require("./routes/favorito");
-const local = require("./routes/local");
-const role = require("./routes/role");
-const user = require("./routes/user");
+// const animal = require("./routes/animal");
+// const contacto = require("./routes/contacto");
+// const especie = require("./routes/especie");
+// const estado = require("./routes/estado");
+// const fatura = require("./routes/fatura");
+// const favorito = require("./routes/favorito");
+// const local = require("./routes/local");
+// const role = require("./routes/role");
+// const user = require("./routes/user");
 
 const login = require("./routes/login");
 
@@ -30,15 +30,8 @@ const login = require("./routes/login");
 // app.use("/role", role);
 // app.use("/user", user);
 
-// app.use("/login", login);
+app.use("/login", login);
 // ======================================
-import { Connection } from "mysql";
-const db: Connection = require("./db_conn");
-
-db.connect(function (err: any) {
-  if (err) return console.log("\n🚩 error: " + err.message);
-  console.log("🐶 Ligado à DB");
-});
 
 
 app.listen(PORT, function () {

@@ -6,19 +6,23 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") })
 interface ENV {
   HOST: string | undefined,
   PORT: number | undefined,
-  DATABASE: string | undefined,
-  USER: string | undefined,
-  PASSWORD: string | undefined
   SECRETKEY: string | undefined
+  DB_HOST: string | undefined,
+  DB_PORT: number | undefined,
+  DATABASE: string | undefined,
+  DB_USER: string | undefined,
+  DB_PASSWORD: string | undefined
 }
 
 interface Config {
   HOST: string,
   PORT: number,
+  SECRETKEY: string,
+  DB_HOST: string,
+  DB_PORT: number,
   DATABASE: string,
-  USER: string,
-  PASSWORD: string,
-  SECRETKEY: string
+  DB_USER: string,
+  DB_PASSWORD: string,
 }
 
 
@@ -26,10 +30,12 @@ const getConfig = (): ENV => {
   return {
     HOST: process.env.HOST,
     PORT: process.env.PORT ? Number(process.env.PORT) : undefined,
+    SECRETKEY: process.env.SECRETKEY,
+    DB_HOST: process.env.DB_HOST,
+    DB_PORT: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
     DATABASE: process.env.DATABASE,
-    USER: process.env.USER,
-    PASSWORD: process.env.PASSWORD,
-    SECRETKEY: process.env.SECRETKEY
+    DB_USER: process.env.DB_USER,
+    DB_PASSWORD: process.env.DB_PASSWORD
   };
 };
 

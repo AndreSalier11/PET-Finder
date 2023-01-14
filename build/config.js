@@ -10,10 +10,12 @@ const getConfig = () => {
     return {
         HOST: process.env.HOST,
         PORT: process.env.PORT ? Number(process.env.PORT) : undefined,
+        SECRETKEY: process.env.SECRETKEY,
+        DB_HOST: process.env.DB_HOST,
+        DB_PORT: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
         DATABASE: process.env.DATABASE,
-        USER: process.env.USER,
-        PASSWORD: process.env.PASSWORD,
-        SECRETKEY: process.env.SECRETKEY
+        DB_USER: process.env.DB_USER,
+        DB_PASSWORD: process.env.DB_PASSWORD
     };
 };
 const getSanitzedConfig = (config) => {
