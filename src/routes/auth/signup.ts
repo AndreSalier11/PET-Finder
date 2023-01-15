@@ -3,10 +3,8 @@ import { Connection } from "mysql";
 import bcrypt from "bcrypt";
 const router: Router = express.Router();
 const conn: Connection = require("../../db_conn");
+const regex = require("../regexConfig");
 
-const validEmailRegex =
-  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-const validNomeRegex = /^[a-zA-Z0-9\sÀ-ÿ]*$/;
 
 router.post("/", async function (req, res) {
   const nome: string = req.body.nome;
@@ -24,7 +22,7 @@ router.post("/", async function (req, res) {
       message: "Insira um Nome",
     });
   }
-  if (!nome.match(validNomeRegex)) {
+  if (!nome.match(regex.validNomeRegex)) {
     return res.status(200).send({
       status: 0,
       message: "O nome não pode ter caracteres especiais",
@@ -35,7 +33,7 @@ router.post("/", async function (req, res) {
       status: 0,
       message: "Insira um Email",
     });
-  } else if (!email.match(validEmailRegex)) {
+  } else if (!email.match(regex.validEmailRegex)) {
     return res.status(200).send({
       status: 0,
       message: "Insira um Email Válido",

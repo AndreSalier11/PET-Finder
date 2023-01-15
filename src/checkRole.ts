@@ -40,14 +40,14 @@ export default {
 
     await new Promise(function (resolve, reject) {
       conn.query(
-        "SELECT id_user, fk_id_role FROM tbl_user WHERE email = ? LIMIT 1",
-        [user.email],
+        "SELECT fk_id_role FROM tbl_user WHERE id_user = ? LIMIT 1",
+        [user.id_user],
         function (err, result) {
           if (err) {
             reject();
           }
-
-          if (result[0].id_user == req.params.id || result[0].fk_id_role == 2) {
+          
+          if (user.id_user == req.params.id || result[0].fk_id_role == 2) {
             resolve(1);
           }
           resolve(2);

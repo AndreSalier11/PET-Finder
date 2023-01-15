@@ -16,8 +16,7 @@ const express_1 = __importDefault(require("express"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const router = express_1.default.Router();
 const conn = require("../../db_conn");
-const validEmailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-const validNomeRegex = /^[a-zA-Z0-9\sÀ-ÿ]*$/;
+const regex = require("../regexConfig");
 router.post("/", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const nome = req.body.nome;
@@ -33,7 +32,7 @@ router.post("/", function (req, res) {
                 message: "Insira um Nome",
             });
         }
-        if (!nome.match(validNomeRegex)) {
+        if (!nome.match(regex.validNomeRegex)) {
             return res.status(200).send({
                 status: 0,
                 message: "O nome não pode ter caracteres especiais",
@@ -45,7 +44,7 @@ router.post("/", function (req, res) {
                 message: "Insira um Email",
             });
         }
-        else if (!email.match(validEmailRegex)) {
+        else if (!email.match(regex.validEmailRegex)) {
             return res.status(200).send({
                 status: 0,
                 message: "Insira um Email Válido",

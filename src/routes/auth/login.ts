@@ -5,9 +5,7 @@ import bcrypt from "bcrypt";
 const router: Router = express.Router();
 const conn: Connection = require("../../db_conn");
 const jwt = require("jsonwebtoken");
-
-const validEmailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-
+const regex = require("../regexConfig");
 
 router.post("/", async function (req, res) {
   const email: string = req.body.email;
@@ -18,7 +16,7 @@ router.post("/", async function (req, res) {
       status: 0,
       message: "Insira um Email",
     });
-  } else if (!email.match(validEmailRegex)) {
+  } else if (!email.match(regex.validEmailRegex)) {
     return res.status(200).send({
       status: 0,
       message: "Insira um Email Válido",
@@ -31,7 +29,7 @@ router.post("/", async function (req, res) {
   }
 
   conn.query(
-    "SELECT email, password FROM tbl_user WHERE email = ? LIMIT 1",
+    "SELECT id_user, nome, email, password, fk_estado FROM tbl_user WHERE email = ? LIMIT 1",
     [email],
     async function (err, result) {
       if (err) {
@@ -41,7 +39,7 @@ router.post("/", async function (req, res) {
         });
       }
 
-      if (result.length == 0) {
+      if (result.length == 0 || result[0].fk_estado == 2) {
         return res.status(200).send({
           status: 0,
           message: "A Conta não foi Encontrada",
@@ -50,13 +48,20 @@ router.post("/", async function (req, res) {
 
       if (await bcrypt.compare(password, result[0].password)) {
         let token = await jwt.sign(
-          { email: email },
+          { id_user: result[0].id_user, nome: result[0].nome },
           config.SECRETKEY,
+          { expiresIn: "1d" },
           (err: string, token: string) => {
+            if (err) {
+              return res.status(500).send({
+                status: 0,
+                message: "Internal server error",
+              });
+            }
             res.status(200).send({
               status: 1,
               message: "Login Feito",
-              token: token
+              token: token,
             });
           }
         );

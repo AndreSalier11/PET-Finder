@@ -18,7 +18,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const router = express_1.default.Router();
 const conn = require("../../db_conn");
 const jwt = require("jsonwebtoken");
-const validEmailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+const regex = require("../regexConfig");
 router.post("/", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const email = req.body.email;
@@ -29,7 +29,7 @@ router.post("/", function (req, res) {
                 message: "Insira um Email",
             });
         }
-        else if (!email.match(validEmailRegex)) {
+        else if (!email.match(regex.validEmailRegex)) {
             return res.status(200).send({
                 status: 0,
                 message: "Insira um Email Válido",
@@ -41,7 +41,7 @@ router.post("/", function (req, res) {
                 message: "Insira uma Password",
             });
         }
-        conn.query("SELECT email, password FROM tbl_user WHERE email = ? LIMIT 1", [email], function (err, result) {
+        conn.query("SELECT id_user, nome, email, password, fk_estado FROM tbl_user WHERE email = ? LIMIT 1", [email], function (err, result) {
             return __awaiter(this, void 0, void 0, function* () {
                 if (err) {
                     return res.status(500).send({
@@ -49,18 +49,24 @@ router.post("/", function (req, res) {
                         message: "Internal server error",
                     });
                 }
-                if (result.length == 0) {
+                if (result.length == 0 || result[0].fk_estado == 2) {
                     return res.status(200).send({
                         status: 0,
                         message: "A Conta não foi Encontrada",
                     });
                 }
                 if (yield bcrypt_1.default.compare(password, result[0].password)) {
-                    let token = yield jwt.sign({ email: email }, config_1.default.SECRETKEY, (err, token) => {
+                    let token = yield jwt.sign({ id_user: result[0].id_user, nome: result[0].nome }, config_1.default.SECRETKEY, { expiresIn: "1d" }, (err, token) => {
+                        if (err) {
+                            return res.status(500).send({
+                                status: 0,
+                                message: "Internal server error",
+                            });
+                        }
                         res.status(200).send({
                             status: 1,
                             message: "Login Feito",
-                            token: token
+                            token: token,
                         });
                     });
                 }
