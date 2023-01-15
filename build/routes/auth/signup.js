@@ -13,23 +13,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const config_1 = __importDefault(require("../config"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const router = express_1.default.Router();
-const conn = require("../db_conn");
-const jwt = require("jsonwebtoken");
-const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+const conn = require("../../db_conn");
+const validEmailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+const validNomeRegex = /^[a-zA-Z0-9\sÀ-ÿ]*$/;
 router.post("/", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        const nome = req.body.nome;
         const email = req.body.email;
         const password = req.body.password;
+        const profile_image = req.body.profile_image;
+        const nr_contribuinte = req.body.nr_contribuinte;
+        const role = 1; //Cliente
+        const estado = 1; //Existente
+        if (!nome) {
+            return res.status(200).send({
+                status: 0,
+                message: "Insira um Nome",
+            });
+        }
+        if (!nome.match(validNomeRegex)) {
+            return res.status(200).send({
+                status: 0,
+                message: "O nome não pode ter caracteres especiais",
+            });
+        }
         if (!email) {
             return res.status(200).send({
                 status: 0,
                 message: "Insira um Email",
             });
         }
-        else if (!email.match(validRegex)) {
+        else if (!email.match(validEmailRegex)) {
             return res.status(200).send({
                 status: 0,
                 message: "Insira um Email Válido",
@@ -41,7 +57,7 @@ router.post("/", function (req, res) {
                 message: "Insira uma Password",
             });
         }
-        conn.query("SELECT email, password FROM tbl_user WHERE email = ? LIMIT 1", [email], function (err, result) {
+        conn.query("SELECT email FROM tbl_user WHERE email = ? LIMIT 1", [email], function (err, result) {
             return __awaiter(this, void 0, void 0, function* () {
                 if (err) {
                     return res.status(500).send({
@@ -49,27 +65,34 @@ router.post("/", function (req, res) {
                         message: "Internal server error",
                     });
                 }
-                if (result.length == 0) {
+                if (result.length > 0) {
                     return res.status(200).send({
                         status: 0,
-                        message: "A Conta não foi Encontrada",
+                        message: "Esse email já está registado",
                     });
                 }
-                if (yield bcrypt_1.default.compare(password, result[0].password)) {
-                    let token = yield jwt.sign({ email: email }, config_1.default.SECRETKEY, (err, token) => {
+                conn.query("INSERT INTO tbl_user (nome, email, password, profile_image, nr_contribuinte, fk_id_role, fk_estado) VALUES (?, ?, ?, ?, ?, ?, ?)", [
+                    nome,
+                    email,
+                    yield bcrypt_1.default.hash(password, 10),
+                    profile_image,
+                    nr_contribuinte,
+                    role,
+                    estado,
+                ], function (err, result) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        if (err) {
+                            return res.status(500).send({
+                                status: 0,
+                                message: "Internal server error",
+                            });
+                        }
                         res.status(200).send({
                             status: 1,
-                            message: "Login Feito",
-                            token: token
+                            message: "Registo Feito",
                         });
                     });
-                }
-                else {
-                    res.status(200).send({
-                        status: 0,
-                        message: "Email ou Password Errados!",
-                    });
-                }
+                });
             });
         });
     });

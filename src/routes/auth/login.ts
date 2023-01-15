@@ -1,14 +1,13 @@
 import express, { Router } from "express";
 import { Connection } from "mysql";
-import config from "../config";
+import config from "../../config";
 import bcrypt from "bcrypt";
-
 const router: Router = express.Router();
-const conn: Connection = require("../db_conn");
+const conn: Connection = require("../../db_conn");
 const jwt = require("jsonwebtoken");
 
-const validRegex =
-  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+const validEmailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
 
 router.post("/", async function (req, res) {
   const email: string = req.body.email;
@@ -19,7 +18,7 @@ router.post("/", async function (req, res) {
       status: 0,
       message: "Insira um Email",
     });
-  } else if (!email.match(validRegex)) {
+  } else if (!email.match(validEmailRegex)) {
     return res.status(200).send({
       status: 0,
       message: "Insira um Email Válido",
@@ -50,10 +49,9 @@ router.post("/", async function (req, res) {
       }
 
       if (await bcrypt.compare(password, result[0].password)) {
-        await jwt.sign(
+        let token = await jwt.sign(
           { email: email },
           config.SECRETKEY,
-          { expiresIn: "3d" },
           (err: string, token: string) => {
             res.status(200).send({
               status: 1,

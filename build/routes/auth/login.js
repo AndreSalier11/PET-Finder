@@ -13,12 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const config_1 = __importDefault(require("../config"));
+const config_1 = __importDefault(require("../../config"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const router = express_1.default.Router();
-const conn = require("../db_conn");
+const conn = require("../../db_conn");
 const jwt = require("jsonwebtoken");
-const validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+const validEmailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 router.post("/", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const email = req.body.email;
@@ -29,7 +29,7 @@ router.post("/", function (req, res) {
                 message: "Insira um Email",
             });
         }
-        else if (!email.match(validRegex)) {
+        else if (!email.match(validEmailRegex)) {
             return res.status(200).send({
                 status: 0,
                 message: "Insira um Email Válido",
@@ -56,7 +56,7 @@ router.post("/", function (req, res) {
                     });
                 }
                 if (yield bcrypt_1.default.compare(password, result[0].password)) {
-                    yield jwt.sign({ email: email }, config_1.default.SECRETKEY, { expiresIn: "3d" }, (err, token) => {
+                    let token = yield jwt.sign({ email: email }, config_1.default.SECRETKEY, (err, token) => {
                         res.status(200).send({
                             status: 1,
                             message: "Login Feito",
