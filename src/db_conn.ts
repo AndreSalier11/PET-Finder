@@ -12,7 +12,7 @@ const db_conn: ConnectionConfig = {
 const conn = mysql.createConnection(db_conn);
 
 conn.connect(function (err: any) {
-  if (err) return console.log("\n🚩 error: " + err.message);
+  if (err) return console.log("🚩 Erro de ligação na DB: " + err.message);
   console.log("🐱 Ligado à DB");
 });
 

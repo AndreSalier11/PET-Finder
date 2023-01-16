@@ -15,7 +15,7 @@ const db_conn = {
 const conn = mysql_1.default.createConnection(db_conn);
 conn.connect(function (err) {
     if (err)
-        return console.log("\n🚩 error: " + err.message);
+        return console.log("🚩 Erro de ligação na DB: " + err.message);
     console.log("🐱 Ligado à DB");
 });
 module.exports = conn;

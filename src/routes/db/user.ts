@@ -6,40 +6,8 @@ import bcrypt from "bcrypt";
 const router: Router = express.Router();
 const conn: Connection = require("../../db_conn");
 const regex = require("../regexConfig");
-const multer = require('multer');
+const upload = require("../fileManager");
 
-const fileTypes = ["png", "jpg", "jpeg", "webp"];
-
-const multerStorage = multer.diskStorage({
-  destination: function (req: Request, file: any, cb: any) {
-    cb(null, "/data/user_img");
-  },
-  filename: function(req: Request, file: any, cb: any) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, file.fieldname + '-' + uniqueSuffix)
-  }
-});
-
-const multerFilter = function(req: any, file: any, cb: any) {
-  if(file.mimetype.split("/")[1].includes(fileTypes)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Tem de ser uma imagem"), false);
-  }
-}
-
-const multerLimit = {
-  fields: 100,
-  fileSize: 20971520,
-  files: 20,
-  parts: 100
-}
-
-const upload = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
-  limits: multerLimit
-});
 
 function checkId(id: string, res: Response) {
   if (!id.match(regex.validIdRegex)) {
@@ -98,10 +66,17 @@ router.put(
   "/:id",
   authenticateToken,
   checkRole.checkUser,
-  upload.single("profile_photo"),
+  upload.file.single("profile_photo"),
   async function (req: any, res) {
     checkId(req.params.id, res);
 
+    if (req.fileValidationError) {
+      return res.status(200).send({
+        status: 0,
+        message: req.fileValidationError
+      });
+    }
+    
     let nome: string | undefined;
     let email: string | undefined;
     let password: any;
@@ -125,7 +100,7 @@ router.put(
         nome = req.body.nome ? req.body.nome : result[0].nome;
         email = req.body.email ? req.body.email : result[0].email;
         password = req.body.password ? req.body.password : result[0].password;
-        profile_image = req.file.filename
+        profile_image = req.file
           ? req.file.filename
           : result[0].profile_image;
         nr_contribuinte = req.body.nr_contribuinte
@@ -156,7 +131,7 @@ router.put(
         if (err) {
           return res.status(500).send({
             status: 0,
-            message: "Internal server error",
+            message: "Internal server errorr",
           });
         }
 

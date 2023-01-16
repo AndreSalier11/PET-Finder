@@ -4,13 +4,21 @@ import bcrypt from "bcrypt";
 const router: Router = express.Router();
 const conn: Connection = require("../../db_conn");
 const regex = require("../regexConfig");
+const update: any = ("../fileManager");
 
+router.post("/", update.file.single("profile_photo"), async function (req: any, res) {
+  
+  if (req.fileValidationError) {
+    return res.status(200).send({
+      status: 0,
+      message: req.fileValidationError
+    });
+  }
 
-router.post("/", async function (req, res) {
   const nome: string = req.body.nome;
   const email: string = req.body.email;
   const password: string = req.body.password;
-  const profile_image: string | undefined = req.body.profile_image;
+  const profile_image: string | undefined = req.file ? req.file.filename : undefined;
   const nr_contribuinte: string | undefined = req.body.nr_contribuinte;
 
   const role = 1; //Cliente

@@ -19,6 +19,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const router = express_1.default.Router();
 const conn = require("../../db_conn");
 const regex = require("../regexConfig");
+const upload = require("../fileManager");
 function checkId(id, res) {
     if (!id.match(regex.validIdRegex)) {
         return res.status(200).send({
@@ -58,9 +59,15 @@ router.get("/:id", function (req, res) {
         res.status(200).json(result[0]);
     });
 });
-router.put("/:id", authToken_1.default, checkRole_1.default.checkUser, function (req, res) {
+router.put("/:id", authToken_1.default, checkRole_1.default.checkUser, upload.file.single("profile_photo"), function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         checkId(req.params.id, res);
+        if (req.fileValidationError) {
+            return res.status(200).send({
+                status: 0,
+                message: req.fileValidationError
+            });
+        }
         let nome;
         let email;
         let password;
@@ -79,8 +86,8 @@ router.put("/:id", authToken_1.default, checkRole_1.default.checkUser, function 
             nome = req.body.nome ? req.body.nome : result[0].nome;
             email = req.body.email ? req.body.email : result[0].email;
             password = req.body.password ? req.body.password : result[0].password;
-            profile_image = req.body.profile_image
-                ? req.body.profile_image
+            profile_image = req.file
+                ? req.file.filename
                 : result[0].profile_image;
             nr_contribuinte = req.body.nr_contribuinte
                 ? req.body.nr_contribuinte
@@ -105,7 +112,7 @@ router.put("/:id", authToken_1.default, checkRole_1.default.checkUser, function 
             if (err) {
                 return res.status(500).send({
                     status: 0,
-                    message: "Internal server error",
+                    message: "Internal server errorr",
                 });
             }
             return res.status(200).send({

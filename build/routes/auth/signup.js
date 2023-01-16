@@ -17,12 +17,13 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const router = express_1.default.Router();
 const conn = require("../../db_conn");
 const regex = require("../regexConfig");
+const update = ("../fileManager");
 router.post("/", function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const nome = req.body.nome;
         const email = req.body.email;
         const password = req.body.password;
-        const profile_image = req.body.profile_image;
+        const profile_image = req.file ? req.file.filename : undefined;
         const nr_contribuinte = req.body.nr_contribuinte;
         const role = 1; //Cliente
         const estado = 1; //Existente
