@@ -58,10 +58,7 @@ router.post("/", update.file.single("profile_photo"), async function (req: any, 
     [email],
     async function (err, result) {
       if (err) {
-        return res.status(500).send({
-          status: 0,
-          message: "Internal server error",
-        });
+        return res.sendStatus(500);
       }
 
       if (result.length > 0) {
@@ -84,10 +81,7 @@ router.post("/", update.file.single("profile_photo"), async function (req: any, 
         ],
         async function (err, result) {
           if (err) {
-            return res.status(500).send({
-              status: 0,
-              message: "Internal server error",
-            });
+            return res.sendStatus(500);
           }
 
           res.status(200).send({

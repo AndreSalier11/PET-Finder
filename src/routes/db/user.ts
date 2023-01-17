@@ -3,8 +3,10 @@ import { Connection } from "mysql";
 import authenticateToken from "../../authToken";
 import checkRole from "../../checkRole";
 import bcrypt from "bcrypt";
+import config from "../../config";
 const router: Router = express.Router();
 const conn: Connection = require("../../db_conn");
+const jwt = require("jsonwebtoken");
 const regex = require("../regexConfig");
 const upload = require("../fileManager");
 
@@ -24,10 +26,7 @@ router.get("/", authenticateToken, function (req, res) {
     "SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user",
     function (err, result) {
       if (err) {
-        return res.status(500).send({
-          status: 0,
-          message: "Internal server error",
-        });
+        return res.sendStatus(500);
       }
 
       res.status(200).json(result);
@@ -44,10 +43,7 @@ router.get("/:id", function (req, res) {
     [req.params.id],
     function (err, result) {
       if (err) {
-        return res.status(500).send({
-          status: 0,
-          message: "Internal server error",
-        });
+        return res.sendStatus(500);
       }
 
       if (result.length == 0) {
@@ -108,10 +104,7 @@ router.put(
           : result[0].nr_contribuinte;
       })
       .catch((err) => {
-        return res.status(500).send({
-          status: 0,
-          message: "Internal server error",
-        });
+        return res.sendStatus(500);
       });
 
     console.log(nome, email, password, profile_image, nr_contribuinte);
@@ -127,18 +120,26 @@ router.put(
         fk_morada,
         req.dataUser.id_user,
       ],
-      function (err, result) {
+      async function (err, result) {
         if (err) {
-          return res.status(500).send({
-            status: 0,
-            message: "Internal server errorr",
-          });
+          return res.sendStatus(500);
         }
 
-        return res.status(200).send({
-          status: 1,
-          message: "A conta foi atualizada",
-        });
+        let token = await jwt.sign(
+          { id_user: result[0].id_user, nome: result[0].nome },
+          config.SECRETKEY,
+          { expiresIn: "1d" },
+          (err: string, token: string) => {
+            if (err) {
+              return res.sendStatus(500);
+            }
+            return res.status(200).send({
+              status: 1,
+              message: "A conta foi atualizada",
+              token: token,
+            });
+          }
+        );
       }
     );
   }
@@ -156,10 +157,7 @@ router.delete(
       [2 /*Apagado*/, req.dataUser.id_user],
       function (err, result) {
         if (err) {
-          return res.status(500).send({
-            status: 0,
-            message: "Internal server error",
-          });
+          return res.sendStatus(500);
         }
 
         return res.status(200).send({

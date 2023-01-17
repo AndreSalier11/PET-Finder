@@ -17,10 +17,7 @@ export default {
       [user.email],
       function (err, result) {
         if (err) {
-          return res.status(500).send({
-            status: 0,
-            message: "Internal server error",
-          });
+          return res.sendStatus(500);
         }
 
         if (result[0].fk_id_role != 2) return res.sendStatus(403);
@@ -61,10 +58,7 @@ export default {
         return res.sendStatus(403);
       })
       .catch(() => {
-        return res.status(500).send({
-          status: 0,
-          message: "Internal server error",
-        });
+        return res.sendStatus(500);
       });
   },
 };

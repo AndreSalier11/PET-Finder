@@ -22,10 +22,7 @@ router.get("/", authenticateToken, function (req, res) {
     "SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user",
     function (err, result) {
       if (err) {
-        return res.status(500).send({
-          status: 0,
-          message: "Internal server error",
-        });
+        return res.sendStatus(500);
       }
 
       res.status(200).json(result);
@@ -42,10 +39,7 @@ router.get("/:id", function (req, res) {
     [req.params.id],
     function (err, result) {
       if (err) {
-        return res.status(500).send({
-          status: 0,
-          message: "Internal server error",
-        });
+        return res.sendStatus(500);
       }
 
       if (result.length == 0) {

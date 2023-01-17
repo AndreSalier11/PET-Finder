@@ -22,10 +22,7 @@ router.get("/", authenticateToken, function (req, res) {
     "SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user",
     function (err, result) {
       if (err) {
-        return res.status(500).send({
-          status: 0,
-          message: "Internal server error",
-        });
+        return res.sendStatus(500);
       }
 
       res.status(200).json(result);
@@ -42,10 +39,7 @@ router.get("/:id", function (req, res) {
     [req.params.id],
     function (err, result) {
       if (err) {
-        return res.status(500).send({
-          status: 0,
-          message: "Internal server error",
-        });
+        return res.sendStatus(500);
       }
 
       if (result.length == 0) {
@@ -98,10 +92,7 @@ router.put(
           : result[0].nr_contribuinte;
       })
       .catch((err) => {
-        return res.status(500).send({
-          status: 0,
-          message: "Internal server error",
-        });
+        return res.sendStatus(500);
       });
 
     console.log(nome, email, password, profile_image, nr_contribuinte);
@@ -119,10 +110,7 @@ router.put(
       ],
       function (err, result) {
         if (err) {
-          return res.status(500).send({
-            status: 0,
-            message: "Internal server error",
-          });
+          return res.sendStatus(500);
         }
 
         return res.status(200).send({
@@ -146,10 +134,7 @@ router.delete(
       [2 /*Apagado*/, req.dataUser.id_user],
       function (err, result) {
         if (err) {
-          return res.status(500).send({
-            status: 0,
-            message: "Internal server error",
-          });
+          return res.sendStatus(500);
         }
 
         return res.status(200).send({

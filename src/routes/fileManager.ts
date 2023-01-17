@@ -1,10 +1,12 @@
+import path from "path";
+import config from "../config";
 const multer = require('multer');
 
 const fileTypes = ["png", "jpg", "jpeg", "webp"];
 
 const multerStorage = multer.diskStorage({
   destination: function (req: Request, file: any, cb: any) {
-    cb(null, "C:/Users/andre/OneDrive/Documentos/Epad/PAP/Apps/API/data/user_img");
+    cb(null, path.join(config.DIR, "/data/user_img"));
   },
 
   filename: function(req: any, file: any, cb: any) {

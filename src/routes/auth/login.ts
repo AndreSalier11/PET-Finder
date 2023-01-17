@@ -33,10 +33,7 @@ router.post("/", async function (req, res) {
     [email],
     async function (err, result) {
       if (err) {
-        return res.status(500).send({
-          status: 0,
-          message: "Internal server error",
-        });
+        return res.sendStatus(500);
       }
 
       if (result.length == 0 || result[0].fk_estado == 2) {
@@ -53,10 +50,7 @@ router.post("/", async function (req, res) {
           { expiresIn: "1d" },
           (err: string, token: string) => {
             if (err) {
-              return res.status(500).send({
-                status: 0,
-                message: "Internal server error",
-              });
+              return res.sendStatus(500);
             }
             res.status(200).send({
               status: 1,
