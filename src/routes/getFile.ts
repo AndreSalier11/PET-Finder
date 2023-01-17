@@ -6,7 +6,7 @@ router.get("/user_img", authenticateToken, function(req, res) {
   const img = req.body.img;
 
   if(req.body.img) {
-    res.status(200).sendFile("/data/user_img/" + img, function(err) {
+    res.status(200).sendFile("/user_img/" + img, function(err) {
       res.status(404).send({
         status: 0,
         message: "A imagem pela qual procura não se encontra disponivel",
@@ -24,7 +24,7 @@ router.get("/animal_img", authenticateToken, function(req, res) {
   const img = req.body.img;
 
   if(req.body.img) {
-    res.status(200).sendFile("/data/animal_img/" + img, function(err) {
+    res.status(200).sendFile("/animal_img/" + img, function(err) {
       res.status(404).send({
         status: 0,
         message: "A imagem pela qual procura não se encontra disponivel",

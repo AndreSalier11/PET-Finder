@@ -1,58 +1,101 @@
-import express, { Response, Router } from "express";
-import { Connection } from "mysql";
+import express, { Request, Response, Router } from "express";
 import authenticateToken from "../../authToken";
 import checkRole from "../../checkRole";
+import { Connection } from "mysql";
 const router: Router = express.Router();
 const conn: Connection = require("../../db_conn");
+const regex = require("../regexConfig");
 
-const validIdRegex = /^[0-9]*$/;
 
-function checkId(id: string, res: Response) {
-  if (!id.match(validIdRegex)) {
+router.get("/:id", authenticateToken, checkRole.checkId, function(req, res) {
+  conn.query("SELECT morada, latitude, longitude, raio FROM tbl_local WHERE id_local = ? LIMIT 1", [req.params.id], function(err, result) {
+    if (err) {
+      return res.sendStatus(500);
+    }
+
+    return res.status(200).send({
+      status: 1,
+      message: result[0].morada + ", " + result[0].latitude + ", " + result[0].longitude + ", " + result[0].raio 
+    });
+  });
+})
+
+router.post("/", authenticateToken, checkRole.checkUserLocal, function(req, res) {
+  const morada = req.body.morada;
+  const latitude = req.body.latitude;
+  const longitude = req.body.longitude;
+  const raio = req.body.raio;
+
+  if(!latitude) {
     return res.status(200).send({
       status: 0,
-      message: "Insira um Id Válido",
+      message: "Tem de inserir a latitude" 
+    });
+
+  } else if(!latitude.match(regex.validCoordinate)) {
+    return res.status(200).send({
+      status: 0,
+      message: "Tem de inserir uma latitude valida" 
+    });
+
+  } else if(!longitude) {
+    return res.status(200).send({
+      status: 0,
+      message: "Tem de inserir a longitude" 
+    });
+
+  } else if(!longitude.match(regex.validCoordinate)) {
+    return res.status(200).send({
+      status: 0,
+      message: "Tem de inserir uma longitude valida" 
     });
   }
-}
 
-// devolve todos os users
-router.get("/", authenticateToken, function (req, res) {
-  conn.query(
-    "SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user",
-    function (err, result) {
+  conn.query("INSERT INTO tbl_local (morada, latitude, longitude, raio) VALUES (?, ?, ?, ?)", [morada, latitude, longitude, raio], function(err, result) {
+    if (err) {
+      return res.sendStatus(500);
+    }
+
+    return res.status(200).send({
+      status: 1,
+      message: "Local inserido" 
+    });
+  });
+});
+
+router.put("/:id", authenticateToken, checkRole.checkId, checkRole.checkUserLocal, function(req, res) {
+  conn.query("SELECT morada, latitude, longitude, raio FROM tbl_local WHERE id_local = ? LIMIT 1", [req.params.id], function(err, result) {
+    if (err) {
+      return res.sendStatus(500);
+    }
+
+    let morada = req.body.morada ? req.body.morada : result[0].morada;
+    let latitude = req.body.latitude ? req.body.latitude : result[0].latitude;
+    let longitude = req.body.longitude ? req.body.longitude : result[0].longitude;
+    let raio = req.body.raio ? req.body.raio : result[0].raio;
+
+    conn.query("INSERT INTO tbl_local (morada, latitude, longitude, raio) VALUES (?, ?, ?, ?)", [morada, latitude, longitude, raio], function(err, result) {
       if (err) {
         return res.sendStatus(500);
       }
+  
+      return res.status(200).send({
+        status: 1,
+        message: "Local inserido" 
+      });
+    });
+  });
+});
 
-      res.status(200).json(result);
+router.delete(":id", authenticateToken, checkRole.checkId, checkRole.checkUserLocal, function(req, res) {
+  conn.query("DELETE FROM tbl_local WHERE id_local = ?", [req.params.id], function(err, result) {
+    if (err) {
+      return res.sendStatus(500);
     }
-  );
+
+    return res.status(200).send({
+      status: 1,
+      message: "Local apagado" 
+    });
+  })
 });
-
-// devolve o user do id
-router.get("/:id", function (req, res) {
-  checkId(req.params.id, res);
-
-  conn.query(
-    "SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user WHERE id_user = ?",
-    [req.params.id],
-    function (err, result) {
-      if (err) {
-        return res.sendStatus(500);
-      }
-
-      if (result.length == 0) {
-        res.status(200).send("Não foi econtrado um User com esse id");
-      }
-
-      res.status(200).json(result[0]);
-    }
-  );
-});
-
-router.put("/:id", authenticateToken, checkRole.checkUser, function(req, res) {
-  checkId(req.params.id, res);
-});
-
-module.exports = router;

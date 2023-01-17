@@ -7,18 +7,8 @@ import config from "../../config";
 const router: Router = express.Router();
 const conn: Connection = require("../../db_conn");
 const jwt = require("jsonwebtoken");
-const regex = require("../regexConfig");
 const upload = require("../fileManager");
 
-
-function checkId(id: string, res: Response) {
-  if (!id.match(regex.validIdRegex)) {
-    return res.status(200).send({
-      status: 0,
-      message: "Insira um Id Válido",
-    });
-  }
-}
 
 // devolve todos os users
 router.get("/", authenticateToken, function (req, res) {
@@ -35,11 +25,9 @@ router.get("/", authenticateToken, function (req, res) {
 });
 
 // devolve o user do id
-router.get("/:id", function (req, res) {
-  checkId(req.params.id, res);
-
+router.get("/:id", checkRole.checkId, function (req, res) {
   conn.query(
-    "SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user WHERE id_user = ?",
+    "SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user WHERE id_user = ? LIMIT 1",
     [req.params.id],
     function (err, result) {
       if (err) {
@@ -62,10 +50,9 @@ router.put(
   "/:id",
   authenticateToken,
   checkRole.checkUser,
+  checkRole.checkId,
   upload.file.single("profile_photo"),
   async function (req: any, res) {
-    checkId(req.params.id, res);
-
     if (req.fileValidationError) {
       return res.status(200).send({
         status: 0,
@@ -149,9 +136,8 @@ router.delete(
   "/:id",
   authenticateToken,
   checkRole.checkUser,
+  checkRole.checkId,
   function (req: any, res) {
-    checkId(req.params.id, res);
-
     conn.query(
       "UPDATE tbl_user SET fk_estado = ? WHERE id_user = ?",
       [2 /*Apagado*/, req.dataUser.id_user],
