@@ -13,10 +13,7 @@ router.get("/:id", authenticateToken, checkRole.checkId, function(req, res) {
       return res.sendStatus(500);
     }
 
-    return res.status(200).send({
-      status: 1,
-      message: result[0].morada + ", " + result[0].latitude + ", " + result[0].longitude + ", " + result[0].raio 
-    });
+    res.status(200).json(result[0]);
   });
 })
 
@@ -74,7 +71,7 @@ router.put("/:id", authenticateToken, checkRole.checkId, checkRole.checkUserLoca
     let longitude = req.body.longitude ? req.body.longitude : result[0].longitude;
     let raio = req.body.raio ? req.body.raio : result[0].raio;
 
-    conn.query("INSERT INTO tbl_local (morada, latitude, longitude, raio) VALUES (?, ?, ?, ?)", [morada, latitude, longitude, raio], function(err, result) {
+    conn.query("UPDATE tbl_local SET morada = ?, latitude = ?, longitude = ?, raio = ? WHERE id_local = ?", [morada, latitude, longitude, raio, req.params.id], function(err, result) {
       if (err) {
         return res.sendStatus(500);
       }

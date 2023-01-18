@@ -17,10 +17,7 @@ router.get("/:id", authenticateToken, checkRole.checkId, function(req:any, res) 
       return res.sendStatus(403);
     }
 
-    return res.status(200).send({
-      status: 1,
-      message: result[0].fk_user + ", " + result[0].fk_animal
-    });
+    res.status(200).json(result[0]);
   });
 });
 

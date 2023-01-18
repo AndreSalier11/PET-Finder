@@ -16,10 +16,7 @@ router.get("/:id", authenticateToken, checkRole.checkId, function(req:any, res) 
       return res.sendStatus(403);
     }
 
-    return res.status(200).send({
-      status: 1,
-      message: result[0].descricao + ", " + result[0].montante + ", " + result[0].data + ", " + result[0].fk_tipo_pagamento + ", " + result[0].fk_user
-    });
+    res.status(200).json(result[0]);
   });
 });
 
@@ -74,4 +71,17 @@ router.post("/", authenticateToken, function(req:any, res) {
       message: "Fatura inserida"
     });
   })
+});
+
+router.get("/tipo-contacto/:id", authenticateToken, checkRole.checkId, function(req:any, res) {
+  conn.query("SELECT descricao, FROM tbl_faturas WHERE id_tipo_pagamento = ? LIMIT 1", [req.params.id], function(err, result) {
+    if (err) {
+      return res.sendStatus(500);
+    }
+
+    return res.status(200).send({
+      status: 1,
+      message: result[0].descricao
+    });
+  });
 });

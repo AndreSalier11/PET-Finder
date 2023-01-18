@@ -11,10 +11,10 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 
 // =============== ROUTES ===============
-// const animal = require("./routes/db/animal");
-// const contacto = require("./routes/db/contacto");
-// const especie = require("./routes/db/especie");
-// const estado = require("./routes/db/estado");
+const animal = require("./routes/db/animal");
+const contacto = require("./routes/db/contacto");
+const especie = require("./routes/db/especie");
+const estado = require("./routes/db/estado");
 const fatura = require("./routes/db/fatura");
 const favorito = require("./routes/db/favorito");
 const local = require("./routes/db/local");
@@ -26,10 +26,10 @@ const signup = require("./routes/auth/signup");
 
 const getFile = require("./routes/getFile");
 
-// app.use("/animal", animal);
-// app.use("/contacto", contacto);
-// app.use("/especie", especie);
-// app.use("/estado", estado);
+app.use("/animal", animal);
+app.use("/contacto", contacto);
+app.use("/especie", especie);
+app.use("/estado", estado);
 app.use("/fatura", fatura);
 app.use("/favorito", favorito);
 app.use("/local", local);
