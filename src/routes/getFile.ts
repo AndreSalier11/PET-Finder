@@ -37,3 +37,5 @@ router.get("/animal_img", authenticateToken, function(req, res) {
     });
   }
 });
+
+module.exports = router;

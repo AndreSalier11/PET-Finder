@@ -77,3 +77,5 @@ router.delete("/:id", authenticateToken, checkRole.checkId, function(req:any, re
     });
   })
 });
+
+module.exports = router;

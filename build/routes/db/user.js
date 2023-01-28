@@ -16,39 +16,25 @@ const express_1 = __importDefault(require("express"));
 const authToken_1 = __importDefault(require("../../authToken"));
 const checkRole_1 = __importDefault(require("../../checkRole"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const config_1 = __importDefault(require("../../config"));
 const router = express_1.default.Router();
 const conn = require("../../db_conn");
-const regex = require("../regexConfig");
+const jwt = require("jsonwebtoken");
 const upload = require("../fileManager");
-function checkId(id, res) {
-    if (!id.match(regex.validIdRegex)) {
-        return res.status(200).send({
-            status: 0,
-            message: "Insira um Id Válido",
-        });
-    }
-}
 // devolve todos os users
 router.get("/", authToken_1.default, function (req, res) {
     conn.query("SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user", function (err, result) {
         if (err) {
-            return res.status(500).send({
-                status: 0,
-                message: "Internal server error",
-            });
+            return res.sendStatus(500);
         }
         res.status(200).json(result);
     });
 });
 // devolve o user do id
-router.get("/:id", function (req, res) {
-    checkId(req.params.id, res);
-    conn.query("SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user WHERE id_user = ?", [req.params.id], function (err, result) {
+router.get("/:id", checkRole_1.default.checkId, function (req, res) {
+    conn.query("SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user WHERE id_user = ? LIMIT 1", [req.params.id], function (err, result) {
         if (err) {
-            return res.status(500).send({
-                status: 0,
-                message: "Internal server error",
-            });
+            return res.sendStatus(500);
         }
         if (result.length == 0) {
             res.status(200).send({
@@ -59,9 +45,8 @@ router.get("/:id", function (req, res) {
         res.status(200).json(result[0]);
     });
 });
-router.put("/:id", authToken_1.default, checkRole_1.default.checkUser, upload.file.single("profile_photo"), function (req, res) {
+router.put("/:id", authToken_1.default, checkRole_1.default.checkUser, checkRole_1.default.checkId, upload.file.single("profile_photo"), function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        checkId(req.params.id, res);
         if (req.fileValidationError) {
             return res.status(200).send({
                 status: 0,
@@ -94,10 +79,7 @@ router.put("/:id", authToken_1.default, checkRole_1.default.checkUser, upload.fi
                 : result[0].nr_contribuinte;
         })
             .catch((err) => {
-            return res.status(500).send({
-                status: 0,
-                message: "Internal server error",
-            });
+            return res.sendStatus(500);
         });
         console.log(nome, email, password, profile_image, nr_contribuinte);
         conn.query("UPDATE tbl_user SET nome = ?, email = ?, password = ?, profile_image = ?, nr_contribuinte = ?, fk_morada = ? WHERE id_user = ?", [
@@ -109,27 +91,28 @@ router.put("/:id", authToken_1.default, checkRole_1.default.checkUser, upload.fi
             fk_morada,
             req.dataUser.id_user,
         ], function (err, result) {
-            if (err) {
-                return res.status(500).send({
-                    status: 0,
-                    message: "Internal server errorr",
+            return __awaiter(this, void 0, void 0, function* () {
+                if (err) {
+                    return res.sendStatus(500);
+                }
+                let token = yield jwt.sign({ id_user: result[0].id_user, nome: result[0].nome }, config_1.default.SECRETKEY, { expiresIn: "1d" }, (err, token) => {
+                    if (err) {
+                        return res.sendStatus(500);
+                    }
+                    return res.status(200).send({
+                        status: 1,
+                        message: "A conta foi atualizada",
+                        token: token,
+                    });
                 });
-            }
-            return res.status(200).send({
-                status: 1,
-                message: "A conta foi atualizada",
             });
         });
     });
 });
-router.delete("/:id", authToken_1.default, checkRole_1.default.checkUser, function (req, res) {
-    checkId(req.params.id, res);
+router.delete("/:id", authToken_1.default, checkRole_1.default.checkUser, checkRole_1.default.checkId, function (req, res) {
     conn.query("UPDATE tbl_user SET fk_estado = ? WHERE id_user = ?", [2 /*Apagado*/, req.dataUser.id_user], function (err, result) {
         if (err) {
-            return res.status(500).send({
-                status: 0,
-                message: "Internal server error",
-            });
+            return res.sendStatus(500);
         }
         return res.status(200).send({
             status: 1,

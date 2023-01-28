@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Connection } from "mysql";
 const conn: Connection = require("./db_conn");
-const regex = require("../regexConfig");
+const regex = require("./routes/regexConfig");
 
 export default {
   checkAdmin: function checkAdmin(
@@ -14,14 +14,14 @@ export default {
     if (!user) return res.sendStatus(403);
 
     conn.query(
-      "SELECT fk_id_role FROM tbl_user WHERE email = ? LIMIT 1",
+      "SELECT fk_role FROM tbl_user WHERE email = ? LIMIT 1",
       [user.email],
       function (err, result) {
         if (err) {
           return res.sendStatus(500);
         }
 
-        if (result[0].fk_id_role != 2) return res.sendStatus(403);
+        if (result[0].fk_role != 2) return res.sendStatus(403);
       }
     );
 
@@ -39,14 +39,14 @@ export default {
 
     await new Promise(function (resolve, reject) {
       conn.query(
-        "SELECT fk_id_role FROM tbl_user WHERE id_user = ? LIMIT 1",
+        "SELECT fk_role FROM tbl_user WHERE id_user = ? LIMIT 1",
         [user.id_user],
         function (err, result) {
           if (err) {
             reject();
           }
           
-          if (user.id_user == req.params.id || result[0].fk_id_role == 2) {
+          if (user.id_user == req.params.id || result[0].fk_role == 2) {
             resolve(1);
           }
           resolve(2);
@@ -85,7 +85,7 @@ export default {
 
     await new Promise(function (resolve, reject) {
       conn.query(
-        "SELECT fk_id_role FROM tbl_user WHERE id_user = ? LIMIT 1",
+        "SELECT fk_role FROM tbl_user WHERE id_user = ? LIMIT 1",
         [user.id_user],
         async function (err, result) {
           if (err) {
@@ -111,7 +111,7 @@ export default {
             return res.sendStatus(500);
           })
           
-          if (result2 == req.params.id || result[0].fk_id_role == 2) {
+          if (result2 == req.params.id || result[0].fk_role == 2) {
             resolve(1);
           }
           resolve(2);

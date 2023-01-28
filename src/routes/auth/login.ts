@@ -13,17 +13,17 @@ router.post("/", async function (req, res) {
 
   if (!email) {
     return res.status(200).send({
-      status: 0,
+      status: 2,
       message: "Insira um Email",
     });
   } else if (!email.match(regex.validEmailRegex)) {
     return res.status(200).send({
-      status: 0,
+      status: 3,
       message: "Insira um Email Válido",
     });
   } else if (!password) {
     return res.status(200).send({
-      status: 0,
+      status: 4,
       message: "Insira uma Password",
     });
   }
@@ -38,7 +38,7 @@ router.post("/", async function (req, res) {
 
       if (result.length == 0 || result[0].fk_estado == 2) {
         return res.status(200).send({
-          status: 0,
+          status: 5,
           message: "A Conta não foi Encontrada",
         });
       }
@@ -61,7 +61,7 @@ router.post("/", async function (req, res) {
         );
       } else {
         res.status(200).send({
-          status: 0,
+          status: 6,
           message: "Email ou Password Errados!",
         });
       }

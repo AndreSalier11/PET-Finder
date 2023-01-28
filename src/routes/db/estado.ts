@@ -18,3 +18,5 @@ router.get("/:id", authenticateToken, checkRole.checkId, function(req:any, res) 
     });
   });
 });
+
+module.exports = router;

@@ -119,3 +119,5 @@ router.get("/tipo-contacto/:id", authenticateToken, checkRole.checkId, function(
     });
   });
 });
+
+module.exports = router;

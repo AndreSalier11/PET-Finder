@@ -8,44 +8,104 @@ const authToken_1 = __importDefault(require("../../authToken"));
 const checkRole_1 = __importDefault(require("../../checkRole"));
 const router = express_1.default.Router();
 const conn = require("../../db_conn");
-const validIdRegex = /^[0-9]*$/;
-function checkId(id, res) {
-    if (!id.match(validIdRegex)) {
-        return res.status(200).send({
-            status: 0,
-            message: "Insira um Id Válido",
-        });
-    }
-}
-// devolve todos os users
-router.get("/", authToken_1.default, function (req, res) {
-    conn.query("SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user", function (err, result) {
+router.get("/:id", authToken_1.default, checkRole_1.default.checkId, function (req, res) {
+    conn.query("SELECT contacto, fk_tipoContacto, fk_user WHERE id_contacto = ? LIMIT 1", [req.params.id], function (err, result) {
         if (err) {
-            return res.status(500).send({
-                status: 0,
-                message: "Internal server error",
-            });
-        }
-        res.status(200).json(result);
-    });
-});
-// devolve o user do id
-router.get("/:id", function (req, res) {
-    checkId(req.params.id, res);
-    conn.query("SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user WHERE id_user = ?", [req.params.id], function (err, result) {
-        if (err) {
-            return res.status(500).send({
-                status: 0,
-                message: "Internal server error",
-            });
-        }
-        if (result.length == 0) {
-            res.status(200).send("Não foi econtrado um User com esse id");
+            return res.sendStatus(500);
         }
         res.status(200).json(result[0]);
     });
 });
-router.put("/:id", authToken_1.default, checkRole_1.default.checkUser, function (req, res) {
-    checkId(req.params.id, res);
+router.post("/", authToken_1.default, function (req, res) {
+    const contacto = req.body.contacto;
+    const fk_tipoContacto = req.body.fk_tipoContacto;
+    const fk_user = req.body.fk_user;
+    if (!contacto) {
+        return res.status(200).send({
+            status: 0,
+            message: "Tem de inserir a descricao"
+        });
+    }
+    else if (!fk_tipoContacto) {
+        return res.status(200).send({
+            status: 0,
+            message: "Tem de inserir o montante"
+        });
+    }
+    else if (!fk_user) {
+        return res.status(200).send({
+            status: 0,
+            message: "Tem de inserir a data"
+        });
+    }
+    else if (req.dataUser.id_user != fk_user) {
+        return res.sendStatus(403);
+    }
+    conn.query("INSERT INTO tbl_contacto (contacto, fk_tipoContacto, fk_user) VALUES (?, ?, ?)", [contacto, fk_tipoContacto, fk_user], function (err, result) {
+        if (err) {
+            return res.sendStatus(500);
+        }
+        return res.status(200).send({
+            status: 1,
+            message: "Contacto inserido"
+        });
+    });
+});
+router.put("/:id", authToken_1.default, checkRole_1.default.checkId, function (req, res) {
+    const contacto = req.body.contacto;
+    const fk_tipoContacto = req.body.fk_tipoContacto;
+    const fk_user = req.body.fk_user;
+    if (!contacto) {
+        return res.status(200).send({
+            status: 0,
+            message: "Tem de inserir a descricao"
+        });
+    }
+    else if (!fk_tipoContacto) {
+        return res.status(200).send({
+            status: 0,
+            message: "Tem de inserir o montante"
+        });
+    }
+    else if (!fk_user) {
+        return res.status(200).send({
+            status: 0,
+            message: "Tem de inserir a data"
+        });
+    }
+    else if (req.dataUser.id_user != fk_user) {
+        return res.sendStatus(403);
+    }
+    conn.query("UPDATE tbl_contacto SET contacto = ?, fk_tipoContacto = ?, fk_user = ? WHERE id_contacto = ?", [contacto, fk_tipoContacto, fk_user, req.params.id], function (err, result) {
+        if (err) {
+            return res.sendStatus(500);
+        }
+        return res.status(200).send({
+            status: 1,
+            message: "Contacto alterado"
+        });
+    });
+});
+router.put("/:id", authToken_1.default, checkRole_1.default.checkId, function (req, res) {
+    conn.query("DELETE tbl_contacto WHERE id_contacto = ?", [req.params.id], function (err, result) {
+        if (err) {
+            return res.sendStatus(500);
+        }
+        return res.status(200).send({
+            status: 1,
+            message: "Contacto apagado"
+        });
+    });
+});
+router.get("/tipo-contacto/:id", authToken_1.default, checkRole_1.default.checkId, function (req, res) {
+    conn.query("SELECT tipo WHERE id_tipoContacto = ? LIMIT 1", [req.params.id], function (err, result) {
+        if (err) {
+            return res.sendStatus(500);
+        }
+        return res.status(200).send({
+            status: 1,
+            message: result[0].tipo
+        });
+    });
 });
 module.exports = router;

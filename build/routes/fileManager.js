@@ -1,9 +1,15 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const path_1 = __importDefault(require("path"));
+const config_1 = __importDefault(require("../config"));
 const multer = require('multer');
 const fileTypes = ["png", "jpg", "jpeg", "webp"];
 const multerStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "C:/Users/andre/OneDrive/Documentos/Epad/PAP/Apps/API/data/user_img");
+        cb(null, path_1.default.join(config_1.default.DIR, "/data/user_img"));
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);

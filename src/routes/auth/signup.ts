@@ -4,9 +4,23 @@ import bcrypt from "bcrypt";
 const router: Router = express.Router();
 const conn: Connection = require("../../db_conn");
 const regex = require("../regexConfig");
-const update: any = ("../fileManager");
+const upload = require("../fileManager");
 
-router.post("/", update.file.single("profile_photo"), async function (req: any, res) {
+async function insertAdmin() {
+  conn.query(
+    "INSERT INTO tbl_user (nome, email, password, fk_role, fk_estado) VALUES ('André', 'andresalier11@gmail.com', '" + await bcrypt.hash("12345", 10) + "', 2, 1)",
+    async function (err, result) {
+      if (err) {
+        return console.log(err)
+      }
+      console.log("admin added")
+    }
+  );
+}
+
+//insertAdmin();
+
+router.post("/", upload.file.single("profile_photo"), async function (req: any, res) {
   
   if (req.fileValidationError) {
     return res.status(200).send({
@@ -26,29 +40,29 @@ router.post("/", update.file.single("profile_photo"), async function (req: any, 
 
   if (!nome) {
     return res.status(200).send({
-      status: 0,
+      status: 2,
       message: "Insira um Nome",
     });
   }
   if (!nome.match(regex.validNomeRegex)) {
     return res.status(200).send({
-      status: 0,
+      status: 3,
       message: "O nome não pode ter caracteres especiais",
     });
   }
   if (!email) {
     return res.status(200).send({
-      status: 0,
+      status: 4,
       message: "Insira um Email",
     });
   } else if (!email.match(regex.validEmailRegex)) {
     return res.status(200).send({
-      status: 0,
+      status: 5,
       message: "Insira um Email Válido",
     });
   } else if (!password) {
     return res.status(200).send({
-      status: 0,
+      status: 6,
       message: "Insira uma Password",
     });
   }
@@ -63,13 +77,13 @@ router.post("/", update.file.single("profile_photo"), async function (req: any, 
 
       if (result.length > 0) {
         return res.status(200).send({
-          status: 0,
+          status: 7,
           message: "Esse email já está registado",
         });
       }
 
       conn.query(
-        "INSERT INTO tbl_user (nome, email, password, profile_image, nr_contribuinte, fk_id_role, fk_estado) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO tbl_user (nome, email, password, profile_image, nr_contribuinte, fk_role, fk_estado) VALUES (?, ?, ?, ?, ?, ?, ?)",
         [
           nome,
           email,

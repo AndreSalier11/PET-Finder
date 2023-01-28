@@ -96,3 +96,5 @@ router.delete(":id", authenticateToken, checkRole.checkId, checkRole.checkUserLo
     });
   })
 });
+
+module.exports = router;

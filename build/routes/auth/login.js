@@ -25,43 +25,37 @@ router.post("/", function (req, res) {
         const password = req.body.password;
         if (!email) {
             return res.status(200).send({
-                status: 0,
+                status: 2,
                 message: "Insira um Email",
             });
         }
         else if (!email.match(regex.validEmailRegex)) {
             return res.status(200).send({
-                status: 0,
+                status: 3,
                 message: "Insira um Email Válido",
             });
         }
         else if (!password) {
             return res.status(200).send({
-                status: 0,
+                status: 4,
                 message: "Insira uma Password",
             });
         }
         conn.query("SELECT id_user, nome, email, password, fk_estado FROM tbl_user WHERE email = ? LIMIT 1", [email], function (err, result) {
             return __awaiter(this, void 0, void 0, function* () {
                 if (err) {
-                    return res.status(500).send({
-                        status: 0,
-                        message: "Internal server error",
-                    });
+                    return res.sendStatus(500);
                 }
                 if (result.length == 0 || result[0].fk_estado == 2) {
                     return res.status(200).send({
-                        status: 0,
+                        status: 5,
                         message: "A Conta não foi Encontrada",
                     });
                 }
                 if (yield bcrypt_1.default.compare(password, result[0].password)) {
                     let token = yield jwt.sign({ id_user: result[0].id_user, nome: result[0].nome }, config_1.default.SECRETKEY, { expiresIn: "1d" }, (err, token) => {
                         if (err) {
-                            return res.status(500).send({
-                                status: 0,
-                                message: "Internal server error",
-                            });
+                            return res.sendStatus(500);
                         }
                         res.status(200).send({
                             status: 1,
@@ -72,7 +66,7 @@ router.post("/", function (req, res) {
                 }
                 else {
                     res.status(200).send({
-                        status: 0,
+                        status: 6,
                         message: "Email ou Password Errados!",
                     });
                 }

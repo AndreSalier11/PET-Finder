@@ -15,7 +15,8 @@ const getConfig = () => {
         DB_PORT: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
         DATABASE: process.env.DATABASE,
         DB_USER: process.env.DB_USER,
-        DB_PASSWORD: process.env.DB_PASSWORD
+        DB_PASSWORD: process.env.DB_PASSWORD,
+        DIR: process.env.DIR,
     };
 };
 const getSanitzedConfig = (config) => {

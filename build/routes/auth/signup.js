@@ -17,9 +17,28 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const router = express_1.default.Router();
 const conn = require("../../db_conn");
 const regex = require("../regexConfig");
-const update = ("../fileManager");
-router.post("/", function (req, res) {
+const upload = require("../fileManager");
+function insertAdmin() {
     return __awaiter(this, void 0, void 0, function* () {
+        conn.query("INSERT INTO tbl_user (nome, email, password, fk_role, fk_estado) VALUES ('André', 'andresalier11@gmail.com', '" + (yield bcrypt_1.default.hash("12345", 10)) + "', 2, 1)", function (err, result) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (err) {
+                    return console.log(err);
+                }
+                console.log("admin added");
+            });
+        });
+    });
+}
+//insertAdmin();
+router.post("/", upload.file.single("profile_photo"), function (req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (req.fileValidationError) {
+            return res.status(200).send({
+                status: 0,
+                message: req.fileValidationError
+            });
+        }
         const nome = req.body.nome;
         const email = req.body.email;
         const password = req.body.password;
@@ -29,49 +48,46 @@ router.post("/", function (req, res) {
         const estado = 1; //Existente
         if (!nome) {
             return res.status(200).send({
-                status: 0,
+                status: 2,
                 message: "Insira um Nome",
             });
         }
         if (!nome.match(regex.validNomeRegex)) {
             return res.status(200).send({
-                status: 0,
+                status: 3,
                 message: "O nome não pode ter caracteres especiais",
             });
         }
         if (!email) {
             return res.status(200).send({
-                status: 0,
+                status: 4,
                 message: "Insira um Email",
             });
         }
         else if (!email.match(regex.validEmailRegex)) {
             return res.status(200).send({
-                status: 0,
+                status: 5,
                 message: "Insira um Email Válido",
             });
         }
         else if (!password) {
             return res.status(200).send({
-                status: 0,
+                status: 6,
                 message: "Insira uma Password",
             });
         }
         conn.query("SELECT email FROM tbl_user WHERE email = ? LIMIT 1", [email], function (err, result) {
             return __awaiter(this, void 0, void 0, function* () {
                 if (err) {
-                    return res.status(500).send({
-                        status: 0,
-                        message: "Internal server error",
-                    });
+                    return res.sendStatus(500);
                 }
                 if (result.length > 0) {
                     return res.status(200).send({
-                        status: 0,
+                        status: 7,
                         message: "Esse email já está registado",
                     });
                 }
-                conn.query("INSERT INTO tbl_user (nome, email, password, profile_image, nr_contribuinte, fk_id_role, fk_estado) VALUES (?, ?, ?, ?, ?, ?, ?)", [
+                conn.query("INSERT INTO tbl_user (nome, email, password, profile_image, nr_contribuinte, fk_role, fk_estado) VALUES (?, ?, ?, ?, ?, ?, ?)", [
                     nome,
                     email,
                     yield bcrypt_1.default.hash(password, 10),
@@ -82,10 +98,7 @@ router.post("/", function (req, res) {
                 ], function (err, result) {
                     return __awaiter(this, void 0, void 0, function* () {
                         if (err) {
-                            return res.status(500).send({
-                                status: 0,
-                                message: "Internal server error",
-                            });
+                            return res.sendStatus(500);
                         }
                         res.status(200).send({
                             status: 1,

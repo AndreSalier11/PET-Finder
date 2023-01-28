@@ -31,3 +31,4 @@ router.get("/:id", authenticateToken, checkRole.checkUser, checkRole.checkId, fu
   );
 });
 
+module.exports = router;
