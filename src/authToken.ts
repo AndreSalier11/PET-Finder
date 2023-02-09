@@ -10,7 +10,7 @@ function authenticateToken(req: Request | any, res: Response, next: NextFunction
 
   jwt.verify(token, config.SECRETKEY, (err: any, user: any) => {
     if (err) return res.sendStatus(403);
-    console.log(user);
+    //console.log(user);
     req.dataUser = user;
     next();
   });

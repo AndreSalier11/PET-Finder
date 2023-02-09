@@ -12,11 +12,14 @@ const regex = require("../regexConfig");
 router.get("/:id", authToken_1.default, checkRole_1.default.checkId, function (req, res) {
     conn.query("SELECT descricao, montante, data, fk_tipo_pagamento, fk_user FROM tbl_faturas WHERE id_faturas = ? LIMIT 1", [req.params.id], function (err, result) {
         if (err) {
+            console.log("GET - fatura " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 500");
             return res.sendStatus(500);
         }
         if (req.dataUser.id_user != result[0].fk_user) {
+            console.log("GET - fatura " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 403");
             return res.sendStatus(403);
         }
+        console.log("GET - fatura " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 200");
         res.status(200).json(result[0]);
     });
 });
@@ -27,20 +30,23 @@ router.post("/", authToken_1.default, function (req, res) {
     const fk_tipo_pagamento = req.body.fk_tipo_pagamento;
     const fk_user = req.body.fk_user;
     if (!descricao) {
+        console.log("POST - fatura - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 2");
         return res.status(200).send({
-            status: 0,
+            status: 2,
             message: "Tem de inserir a descricao"
         });
     }
     else if (!montante) {
+        console.log("POST - fatura - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 3");
         return res.status(200).send({
-            status: 0,
+            status: 3,
             message: "Tem de inserir o montante"
         });
     }
     else if (!data) {
+        console.log("POST - fatura - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 4");
         return res.status(200).send({
-            status: 0,
+            status: 4,
             message: "Tem de inserir a data"
         });
     }

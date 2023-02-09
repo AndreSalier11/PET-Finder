@@ -44,6 +44,10 @@ app.use("/signup", signup);
 app.use("/data", getFile);
 // ======================================
 
+// app.use(function(req, res){
+//   res.sendStatus(404);
+// });
+
 app.listen(PORT, function () {
   console.log("🐶 PetFinder API online - A ouvir http://" + HOST + ":" + PORT);
 });

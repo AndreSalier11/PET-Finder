@@ -24,18 +24,21 @@ router.post("/", function (req, res) {
         const email = req.body.email;
         const password = req.body.password;
         if (!email) {
+            console.log("POST - login - 2");
             return res.status(200).send({
                 status: 2,
                 message: "Insira um Email",
             });
         }
         else if (!email.match(regex.validEmailRegex)) {
+            console.log("POST - login - 3");
             return res.status(200).send({
                 status: 3,
                 message: "Insira um Email Válido",
             });
         }
         else if (!password) {
+            console.log("POST - login - 4");
             return res.status(200).send({
                 status: 4,
                 message: "Insira uma Password",
@@ -44,19 +47,22 @@ router.post("/", function (req, res) {
         conn.query("SELECT id_user, nome, email, password, fk_estado FROM tbl_user WHERE email = ? LIMIT 1", [email], function (err, result) {
             return __awaiter(this, void 0, void 0, function* () {
                 if (err) {
+                    console.log("POST - login - 500");
                     return res.sendStatus(500);
                 }
                 if (result.length == 0 || result[0].fk_estado == 2) {
+                    console.log("POST - login - 5");
                     return res.status(200).send({
                         status: 5,
                         message: "A Conta não foi Encontrada",
                     });
                 }
                 if (yield bcrypt_1.default.compare(password, result[0].password)) {
-                    let token = yield jwt.sign({ id_user: result[0].id_user, nome: result[0].nome }, config_1.default.SECRETKEY, { expiresIn: "1d" }, (err, token) => {
+                    let token = yield jwt.sign({ id_user: result[0].id_user, nome: result[0].nome }, config_1.default.SECRETKEY, { expiresIn: "7d" }, (err, token) => {
                         if (err) {
                             return res.sendStatus(500);
                         }
+                        console.log("POST - login - 1");
                         res.status(200).send({
                             status: 1,
                             message: "Login Feito",
@@ -65,6 +71,7 @@ router.post("/", function (req, res) {
                     });
                 }
                 else {
+                    console.log("POST - login - 6");
                     res.status(200).send({
                         status: 6,
                         message: "Email ou Password Errados!",

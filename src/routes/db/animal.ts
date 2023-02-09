@@ -9,36 +9,40 @@ const jwt = require("jsonwebtoken");
 const upload = require("../fileManager");
 
 
-router.get("/", authenticateToken, function (req, res) {
+router.get("/", authenticateToken, function (req: any, res) {
   conn.query(
-    "SELECT id_animal, nome, raca_mutacao, genero, idade FROM tbl_animal",
+    "SELECT id_animal, nome, raca_mutacao, genero, idade, image_animal, data_estado, fk_estado, fk_especie FROM tbl_animal",
     function (err, result) {
       if (err) {
+        console.log("GET - animal - " + req.dataUser.nome + " - 500");
         return res.sendStatus(500);
       }
-
+      console.log("GET - animal - " + req.dataUser.nome + " - 200");
       res.status(200).json(result);
     }
   );
 });
 
 
-router.get("/:id", checkRole.checkId, function (req, res) {
+router.get("/:id", checkRole.checkId, function (req: any, res) {
   conn.query(
     "SELECT id_animal, nome, raca_mutacao, genero, idade, nota, image_animal, data_estado, fk_estado, fk_id_especie, fk_user, fk_local FROM tbl_user WHERE tbl_animal = ? LIMIT 1",
     [req.params.id],
     function (err, result) {
       if (err) {
+        console.log("GET - animal " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 500");
         return res.sendStatus(500);
       }
 
       if (result.length == 0) {
+        console.log("GET - animal " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 2");
         res.status(200).send({
-          status: 0,
+          status: 2,
           message: "Não foi econtrado um User com esse id",
         });
       }
-
+      
+      console.log("GET - animal " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 200");
       res.status(200).json(result[0]);
     }
   );
@@ -52,8 +56,9 @@ router.put(
   upload.file.single("animal_photo"),
   async function (req: any, res) {
     if (req.fileValidationError) {
+      console.log("PUT - animal " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 2");
       return res.status(200).send({
-        status: 0,
+        status: 2,
         message: req.fileValidationError
       });
     }
@@ -89,10 +94,11 @@ router.put(
           : result[0].nr_contribuinte;
       })
       .catch((err) => {
+        console.log("PUT - animal " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 500");
         return res.sendStatus(500);
       });
 
-    console.log(nome, email, password, profile_image, nr_contribuinte);
+    //console.log(nome, email, password, profile_image, nr_contribuinte);
 
     conn.query(
       "UPDATE tbl_user SET nome = ?, email = ?, password = ?, profile_image = ?, nr_contribuinte = ?, fk_morada = ? WHERE id_user = ?",
@@ -115,10 +121,12 @@ router.put(
           { expiresIn: "1d" },
           (err: string, token: string) => {
             if (err) {
+              console.log("PUT - animal " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 500");
               return res.sendStatus(500);
             }
+            console.log("PUT - animal " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 3");
             return res.status(200).send({
-              status: 1,
+              status: 3,
               message: "A conta foi atualizada",
               token: token,
             });
@@ -141,9 +149,11 @@ router.delete(
       [2 /*Apagado*/, req.dataUser.id_user],
       function (err, result) {
         if (err) {
+          console.log("DELETE - animal " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 500");
           return res.sendStatus(500);
         }
 
+        console.log("DELETE - animal " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 1");
         return res.status(200).send({
           status: 1,
           message: "A conta foi apagada",

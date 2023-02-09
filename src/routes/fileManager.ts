@@ -11,13 +11,13 @@ const multerStorage = multer.diskStorage({
 
   filename: function(req: any, file: any, cb: any) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const name = file.fieldname + '-' + uniqueSuffix + '.' + file.mimetype.split("/")[1];
+    const name = file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split(".")[1];
     cb(null, name);
   }
 });
 
 const multerFilter = function(req: any, file: any, cb: any, res: any) {
-  if(fileTypes.includes(file.mimetype.split("/")[1])) {
+  if(fileTypes.includes(file.originalname.split(".")[1])) {
     cb(null, true);
   } else {
     req.fileValidationError = "O arquivo tem de ser uma imagem"

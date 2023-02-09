@@ -11,36 +11,41 @@ const upload = require("../fileManager");
 
 
 // devolve todos os users
-router.get("/", authenticateToken, function (req, res) {
+router.get("/", authenticateToken, function (req: any, res) {
   conn.query(
     "SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user",
     function (err, result) {
       if (err) {
+        console.log("GET - user - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 500");
         return res.sendStatus(500);
       }
 
+      console.log("GET - user - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 200");
       res.status(200).json(result);
     }
   );
 });
 
 // devolve o user do id
-router.get("/:id", checkRole.checkId, function (req, res) {
+router.get("/:id", checkRole.checkId, function (req: any, res) {
   conn.query(
     "SELECT id_user, nome, data_registo, profile_image, fk_estado FROM tbl_user WHERE id_user = ? LIMIT 1",
     [req.params.id],
     function (err, result) {
       if (err) {
+        console.log("GET - user " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 500");
         return res.sendStatus(500);
       }
 
       if (result.length == 0) {
+        console.log("GET - user " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 2");
         res.status(200).send({
-          status: 0,
+          status: 2,
           message: "Não foi econtrado um User com esse id",
         });
       }
 
+      console.log("GET - user " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 200");
       res.status(200).json(result[0]);
     }
   );
@@ -51,11 +56,12 @@ router.put(
   authenticateToken,
   checkRole.checkUser,
   checkRole.checkId,
-  upload.file.single("profile_photo"),
+  upload.file.single("image"),
   async function (req: any, res) {
     if (req.fileValidationError) {
+      console.log("PUT - user " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 3");
       return res.status(200).send({
-        status: 0,
+        status: 3,
         message: req.fileValidationError
       });
     }
@@ -91,6 +97,7 @@ router.put(
           : result[0].nr_contribuinte;
       })
       .catch((err) => {
+        console.log("PUT - user " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 500");
         return res.sendStatus(500);
       });
 
@@ -109,6 +116,7 @@ router.put(
       ],
       async function (err, result) {
         if (err) {
+          console.log("PUT - user " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 500");
           return res.sendStatus(500);
         }
 
@@ -118,8 +126,10 @@ router.put(
           { expiresIn: "1d" },
           (err: string, token: string) => {
             if (err) {
+              console.log("PUT - user " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 500");
               return res.sendStatus(500);
             }
+            console.log("PUT - user " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 1");
             return res.status(200).send({
               status: 1,
               message: "A conta foi atualizada",
@@ -143,9 +153,11 @@ router.delete(
       [2 /*Apagado*/, req.dataUser.id_user],
       function (err, result) {
         if (err) {
+          console.log("DELETE - user " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 500");
           return res.sendStatus(500);
         }
 
+        console.log("DELETE - user " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 1");
         return res.status(200).send({
           status: 1,
           message: "A conta foi apagada",

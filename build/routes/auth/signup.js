@@ -31,11 +31,12 @@ function insertAdmin() {
     });
 }
 //insertAdmin();
-router.post("/", upload.file.single("profile_photo"), function (req, res) {
+router.post("/", upload.file.single("image"), function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         if (req.fileValidationError) {
+            console.log("POST - signup - 8");
             return res.status(200).send({
-                status: 0,
+                status: 8,
                 message: req.fileValidationError
             });
         }
@@ -47,30 +48,35 @@ router.post("/", upload.file.single("profile_photo"), function (req, res) {
         const role = 1; //Cliente
         const estado = 1; //Existente
         if (!nome) {
+            console.log("POST - signup - 2");
             return res.status(200).send({
                 status: 2,
                 message: "Insira um Nome",
             });
         }
         if (!nome.match(regex.validNomeRegex)) {
+            console.log("POST - signup - 3");
             return res.status(200).send({
                 status: 3,
                 message: "O nome não pode ter caracteres especiais",
             });
         }
         if (!email) {
+            console.log("POST - signup - 4");
             return res.status(200).send({
                 status: 4,
                 message: "Insira um Email",
             });
         }
         else if (!email.match(regex.validEmailRegex)) {
+            console.log("POST - signup - 5");
             return res.status(200).send({
                 status: 5,
                 message: "Insira um Email Válido",
             });
         }
         else if (!password) {
+            console.log("POST - signup - 6");
             return res.status(200).send({
                 status: 6,
                 message: "Insira uma Password",
@@ -79,9 +85,11 @@ router.post("/", upload.file.single("profile_photo"), function (req, res) {
         conn.query("SELECT email FROM tbl_user WHERE email = ? LIMIT 1", [email], function (err, result) {
             return __awaiter(this, void 0, void 0, function* () {
                 if (err) {
+                    console.log("POST - signup - 500");
                     return res.sendStatus(500);
                 }
                 if (result.length > 0) {
+                    console.log("POST - signup - 7");
                     return res.status(200).send({
                         status: 7,
                         message: "Esse email já está registado",
@@ -98,8 +106,10 @@ router.post("/", upload.file.single("profile_photo"), function (req, res) {
                 ], function (err, result) {
                     return __awaiter(this, void 0, void 0, function* () {
                         if (err) {
+                            console.log("POST - signup - 500");
                             return res.sendStatus(500);
                         }
+                        console.log("POST - signup - 1");
                         res.status(200).send({
                             status: 1,
                             message: "Registo Feito",

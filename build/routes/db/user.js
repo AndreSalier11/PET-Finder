@@ -45,7 +45,7 @@ router.get("/:id", checkRole_1.default.checkId, function (req, res) {
         res.status(200).json(result[0]);
     });
 });
-router.put("/:id", authToken_1.default, checkRole_1.default.checkUser, checkRole_1.default.checkId, upload.file.single("profile_photo"), function (req, res) {
+router.put("/:id", authToken_1.default, checkRole_1.default.checkUser, checkRole_1.default.checkId, upload.file.single("image"), function (req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         if (req.fileValidationError) {
             return res.status(200).send({

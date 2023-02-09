@@ -11,8 +11,10 @@ const conn = require("../../db_conn");
 router.get("/:id", authToken_1.default, checkRole_1.default.checkId, function (req, res) {
     conn.query("SELECT nome_especie FROM tbl_especie WHERE id_especie = ? LIMIT 1", [req.params.id], function (err, result) {
         if (err) {
+            console.log("GET - especie " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 500");
             return res.sendStatus(500);
         }
+        console.log("GET - especie " + req.params.id + " - " + req.dataUser.id_user + " " + req.dataUser.nome + " - 1");
         return res.status(200).send({
             status: 1,
             message: result[0].nome_especie

@@ -20,11 +20,12 @@ async function insertAdmin() {
 
 //insertAdmin();
 
-router.post("/", upload.file.single("profile_photo"), async function (req: any, res) {
+router.post("/", upload.file.single("image"), async function (req: any, res) {
   
   if (req.fileValidationError) {
+    console.log("POST - signup - 8");
     return res.status(200).send({
-      status: 0,
+      status: 8,
       message: req.fileValidationError
     });
   }
@@ -39,28 +40,33 @@ router.post("/", upload.file.single("profile_photo"), async function (req: any, 
   const estado = 1; //Existente
 
   if (!nome) {
+    console.log("POST - signup - 2");
     return res.status(200).send({
       status: 2,
       message: "Insira um Nome",
     });
   }
   if (!nome.match(regex.validNomeRegex)) {
+    console.log("POST - signup - 3");
     return res.status(200).send({
       status: 3,
       message: "O nome não pode ter caracteres especiais",
     });
   }
   if (!email) {
+    console.log("POST - signup - 4");
     return res.status(200).send({
       status: 4,
       message: "Insira um Email",
     });
   } else if (!email.match(regex.validEmailRegex)) {
+    console.log("POST - signup - 5");
     return res.status(200).send({
       status: 5,
       message: "Insira um Email Válido",
     });
   } else if (!password) {
+    console.log("POST - signup - 6");
     return res.status(200).send({
       status: 6,
       message: "Insira uma Password",
@@ -72,10 +78,12 @@ router.post("/", upload.file.single("profile_photo"), async function (req: any, 
     [email],
     async function (err, result) {
       if (err) {
+        console.log("POST - signup - 500");
         return res.sendStatus(500);
       }
 
       if (result.length > 0) {
+        console.log("POST - signup - 7");
         return res.status(200).send({
           status: 7,
           message: "Esse email já está registado",
@@ -95,9 +103,10 @@ router.post("/", upload.file.single("profile_photo"), async function (req: any, 
         ],
         async function (err, result) {
           if (err) {
+            console.log("POST - signup - 500");
             return res.sendStatus(500);
           }
-
+          console.log("POST - signup - 1");
           res.status(200).send({
             status: 1,
             message: "Registo Feito",
